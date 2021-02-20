@@ -7,8 +7,7 @@ https://stakd.finance. Feel free to read the code. More details coming soon.
 
 ### BSCMAINNET
 
-#### Contracts deployed by Kebab
+#### Contracts deployed by STAKD
+TBA
 
-
-##### Swap contracts deployed by Pancake
 
