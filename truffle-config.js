@@ -1,7 +1,8 @@
 
+require('dotenv').config()
 const PrivateKeyProvider = require("truffle-privatekey-provider");
 const pkey = process.env.PKEY;
-const ganache = "0x8e712f375e3a49ee1a7295682057da04277d68b4c61bd29deb2bcd5658160eba"
+const ganache = "0xfcdddbeb8fcac5de004e0c69dc603ecb3a70791a6ac107dc573294058a2b7e07"
 module.exports = {
   // Uncommenting the defaults below
   // provides for an easier quick-start with Ganache.
@@ -15,16 +16,16 @@ module.exports = {
      network_id: "*"
    },
    bsctest: {
-    provider: () => new PrivateKeyProvider(pkey, `https://data-seed-prebsc-1-s1.binance.org:8545`),
+    provider: () => new PrivateKeyProvider(pkey, `https://data-seed-prebsc-1-s3.binance.org:8545/`), 
     network_id: 97,
-    confirmations: 10,
+    confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true
    },
    bsc: {
     provider: () => new PrivateKeyProvider(pkey, `https://bsc-dataseed.binance.org`),
     network_id: 56,
-    confirmations: 10,
+    confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true
    }
@@ -40,4 +41,10 @@ module.exports = {
       version: "0.6.12"
     }
   },
+  api_keys: {
+    bscscan: '8QHPDDNYV9M73YJV6EMHAPA3VX7QNPSUDV'
+  },
+  plugins: [
+    'truffle-plugin-verify'
+  ]
 };

@@ -7,21 +7,30 @@ const Timelock = artifacts.require("Timelock");
 const STAKDSale = artifacts.require("STAKDSale");
 const VestingDev = artifacts.require("VestingDev");
 const VestingTeam = artifacts.require("VestingTeam");
-const admin = "0x24A6578b8ccB13043f4Ef4E131e8A591E89B1b97"
-const startBlock = "1234" //to be changed
-const vestingStart ="123123"//to be changed
-const vestingDevAmount = web3.utils.toWei("56000","ether");
-const vestingTeamAmount = web3.utils.toWei("100000","ether");
-const saleDistro = web3.utils.toWei("344000","ether"); //seed,private,public sale + initial liquidity + marketing fund + airdrops (more info in pitch deck)
-const timeLockDelay = "1209600" //14 days
-module.exports = function(deployer) {
- 
-  deployer.then(async()=>{
+const admin = "0x24A6578b8ccB13043f4Ef4E131e8A591E89B1b97";
+const startBlock = "1234"; //to be changed
+const vestingStart = "123123"; //to be changed
+const vestingDevAmount = web3.utils.toWei("56000", "ether");
+const vestingTeamAmount = web3.utils.toWei("70000", "ether");
+
+const saleDistro = web3.utils.toWei("374000", "ether"); //seed,private,public sale + initial liquidity + marketing fund + airdrops (more info in pitch deck)
+const timeLockDelay = "1209600"; //14 days
+module.exports = function (deployer) {
+  deployer.then(async () => {
     await deployer.deploy(STAKDToken);
     const stakdToken = await STAKDToken.deployed();
-    await deployer.deploy(MasterStakd,stakdToken.address,admin,startBlock);
+    await stakdToken.mint(admin, saleDistro);
+    await deployer.deploy(Timelock, admin, timeLockDelay);
     await deployer.deploy(LockLiquidity);
-    await deployer.deploy(Timelock,admin,timeLockDelay);
+
+    /*
+    await stakdToken.mint(vestingDev.address, vestingDevAmount);
+    await stakdToken.mint(vestingTeam.address, vestingTeamAmount);
+   
+  
+    await deployer.deploy(MasterStakd,stakdToken.address,admin,startBlock);
+    
+    
     await deployer.deploy(STAKDSale);
     await deployer.deploy(VestingDev,stakdToken.address,vestingStart);
     await deployer.deploy(VestingTeam,stakdToken.address,vestingStart);
@@ -30,12 +39,10 @@ module.exports = function(deployer) {
 
     //mint tokens to admin to use for, seed round distro, private round distro, public sale distro, packakeswap liqudity, marketing fund, airdrops
 
-    await stakdToken.mint(vestingDev.address,vestingDevAmount);
-    await stakdToken.mint(vestingTeam.address,vestingTeamAmount);
-    await stakdToken.mint(admin,saleDistro);
-
-    console.log(await stakdToken.totalSupply())
-
-  })
-
+   
+*/
+    console.log(await stakdToken.totalSupply());
+    const supply = await stakdToken.totalSupply();
+    console.log(web3.utils.fromWei(supply.toString(),"ether")) //344k
+  });
 };
