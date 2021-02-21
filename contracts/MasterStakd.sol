@@ -1,9 +1,9 @@
 pragma solidity 0.6.12;
 
-import '@pancakeswap/pancake-swap-lib/contracts/math/SafeMath.sol';
-import '@pancakeswap/pancake-swap-lib/contracts/token/BEP20/IBEP20.sol';
-import '@pancakeswap/pancake-swap-lib/contracts/token/BEP20/SafeBEP20.sol';
-import '@pancakeswap/pancake-swap-lib/contracts/access/Ownable.sol';
+import "@pancakeswap/pancake-swap-lib/contracts/math/SafeMath.sol";
+import "@pancakeswap/pancake-swap-lib/contracts/token/BEP20/IBEP20.sol";
+import "@pancakeswap/pancake-swap-lib/contracts/token/BEP20/SafeBEP20.sol";
+import "@pancakeswap/pancake-swap-lib/contracts/access/Ownable.sol";
 
 import "./STAKDToken.sol";
 
@@ -35,7 +35,7 @@ contract MasterStakd is Ownable {
 
     // Info of each user.
     struct UserInfo {
-        uint256 amount;     // How many LP tokens the user has provided.
+        uint256 amount; // How many LP tokens the user has provided.
         uint256 rewardDebt; // Reward debt. See explanation below.
         //
         // We do some fancy math here. Basically, any point in time, the amount of stakds
@@ -52,9 +52,9 @@ contract MasterStakd is Ownable {
 
     // Info of each pool.
     struct PoolInfo {
-        IBEP20 lpToken;           // Address of LP token contract.
-        uint256 allocPoint;       // How many allocation points assigned to this pool. stakds to distribute per block.
-        uint256 lastRewardBlock;  // Last block number that stakds distribution occurs.
+        IBEP20 lpToken; // Address of LP token contract.
+        uint256 allocPoint; // How many allocation points assigned to this pool. stakds to distribute per block.
+        uint256 lastRewardBlock; // Last block number that stakds distribution occurs.
         uint256 accstakdPerShare; // Accumulated stakds per share, times 1e12. See below.
     }
 
@@ -68,11 +68,12 @@ contract MasterStakd is Ownable {
     uint256 public BONUS_MULTIPLIER = 1;
     // The migrator contract. It has a lot of power. Can only be set through governance (owner).
     IMigratorChef public migrator;
+    uint256 public constant maxSupply = 2000000 ether;
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
     // Info of each user that stakes LP tokens.
-    mapping (uint256 => mapping (address => UserInfo)) public userInfo;
+    mapping(uint256 => mapping(address => UserInfo)) public userInfo;
     // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint = 0;
     // The block number when stakd mining starts.
@@ -80,7 +81,11 @@ contract MasterStakd is Ownable {
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
+    event EmergencyWithdraw(
+        address indexed user,
+        uint256 indexed pid,
+        uint256 amount
+    );
 
     constructor(
         STAKDToken _stakd,
@@ -102,7 +107,11 @@ contract MasterStakd is Ownable {
 
     // Add a new lp to the pool. Can only be called by the owner.
     // XXX DO NOT add the same LP token more than once. Rewards will be messed up if you do.
-    function add(uint256 _allocPoint, IBEP20 _lpToken, bool _withUpdate) public onlyOwner {
+    function add(
+        uint256 _allocPoint,
+        IBEP20 _lpToken,
+        bool _withUpdate
+    ) public onlyOwner {
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -120,7 +129,11 @@ contract MasterStakd is Ownable {
     }
 
     // Update the given pool's stakd allocation point. Can only be called by the owner.
-    function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOwner {
+    function set(
+        uint256 _pid,
+        uint256 _allocPoint,
+        bool _withUpdate
+    ) public onlyOwner {
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -148,20 +161,34 @@ contract MasterStakd is Ownable {
     }
 
     // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to) public view returns (uint256) {
+    function getMultiplier(uint256 _from, uint256 _to)
+        public
+        view
+        returns (uint256)
+    {
         return _to.sub(_from).mul(BONUS_MULTIPLIER);
     }
 
     // View function to see pending stakds on frontend.
-    function pendingstakd(uint256 _pid, address _user) external view returns (uint256) {
+    function pendingstakd(uint256 _pid, address _user)
+        external
+        view
+        returns (uint256)
+    {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accstakdPerShare = pool.accstakdPerShare;
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
-            uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-            uint256 stakdReward = multiplier.mul(stakdPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-            accstakdPerShare = accstakdPerShare.add(stakdReward.mul(1e12).div(lpSupply));
+            uint256 multiplier =
+                getMultiplier(pool.lastRewardBlock, block.number);
+            uint256 stakdReward =
+                multiplier.mul(stakdPerBlock).mul(pool.allocPoint).div(
+                    totalAllocPoint
+                );
+            accstakdPerShare = accstakdPerShare.add(
+                stakdReward.mul(1e12).div(lpSupply)
+            );
         }
         return user.amount.mul(accstakdPerShare).div(1e12).sub(user.rewardDebt);
     }
@@ -173,7 +200,6 @@ contract MasterStakd is Ownable {
             updatePool(pid);
         }
     }
-
 
     // Update reward variables of the given pool to be up-to-date.
     function updatePool(uint256 _pid) public {
@@ -187,29 +213,44 @@ contract MasterStakd is Ownable {
             return;
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 stakdReward = multiplier.mul(stakdPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-        stakd.mint(devaddr, stakdReward.div(20));
-        stakd.mint(address(stakd), stakdReward);
-        pool.accstakdPerShare = pool.accstakdPerShare.add(stakdReward.mul(1e12).div(lpSupply));
-        pool.lastRewardBlock = block.number;
+        uint256 stakdReward =
+            multiplier.mul(stakdPerBlock).mul(pool.allocPoint).div(
+                totalAllocPoint
+            );
+        if (stakdReward.add(stakd.totalSupply()) >= maxSupply) { //check for max total supply 
+            pool.lastRewardBlock = block.number;
+            return;
+        } else {
+            stakd.mint(devaddr, stakdReward.div(50));
+            stakd.mint(address(this), stakdReward);
+            pool.accstakdPerShare = pool.accstakdPerShare.add(
+                stakdReward.mul(1e12).div(lpSupply)
+            );
+            pool.lastRewardBlock = block.number;
+            return;
+        }
     }
 
     // Deposit LP tokens to MasterChef for stakd allocation.
     function deposit(uint256 _pid, uint256 _amount) public {
-
-        require (_pid != 0, 'deposit stakd by staking');
-
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         updatePool(_pid);
         if (user.amount > 0) {
-            uint256 pending = user.amount.mul(pool.accstakdPerShare).div(1e12).sub(user.rewardDebt);
-            if(pending > 0) {
+            uint256 pending =
+                user.amount.mul(pool.accstakdPerShare).div(1e12).sub(
+                    user.rewardDebt
+                );
+            if (pending > 0) {
                 safestakdTransfer(msg.sender, pending);
             }
         }
         if (_amount > 0) {
-            pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
+            pool.lpToken.safeTransferFrom(
+                address(msg.sender),
+                address(this),
+                _amount
+            );
             user.amount = user.amount.add(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accstakdPerShare).div(1e12);
@@ -218,24 +259,26 @@ contract MasterStakd is Ownable {
 
     // Withdraw LP tokens from MasterChef.
     function withdraw(uint256 _pid, uint256 _amount) public {
-
-        require (_pid != 0, 'withdraw stakd by unstaking');
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
 
         updatePool(_pid);
-        uint256 pending = user.amount.mul(pool.accstakdPerShare).div(1e12).sub(user.rewardDebt);
-        if(pending > 0) {
+        uint256 pending =
+            user.amount.mul(pool.accstakdPerShare).div(1e12).sub(
+                user.rewardDebt
+            );
+        if (pending > 0) {
             safestakdTransfer(msg.sender, pending);
         }
-        if(_amount > 0) {
+        if (_amount > 0) {
             user.amount = user.amount.sub(_amount);
             pool.lpToken.safeTransfer(address(msg.sender), _amount);
         }
         user.rewardDebt = user.amount.mul(pool.accstakdPerShare).div(1e12);
         emit Withdraw(msg.sender, _pid, _amount);
     }
+
     // Withdraw without caring about rewards. EMERGENCY ONLY.
     function emergencyWithdraw(uint256 _pid) public {
         PoolInfo storage pool = poolInfo[_pid];
