@@ -233,6 +233,7 @@ contract MasterStakd is Ownable {
 
     // Deposit LP tokens to MasterChef for stakd allocation.
     function deposit(uint256 _pid, uint256 _amount) public {
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         updatePool(_pid);
