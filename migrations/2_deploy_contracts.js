@@ -8,7 +8,7 @@ const STAKDSale = artifacts.require("STAKDSale");
 const VestingDev = artifacts.require("VestingDev");
 const VestingTeam = artifacts.require("VestingTeam");
 const admin = "0x24A6578b8ccB13043f4Ef4E131e8A591E89B1b97";
-const startBlock = "5136969"; //to be changed
+const startBlock = "5133699"; //to be changed
 const vestingStartDev = "1614096000"; // 4pm utc 23 feb
 const vestingStartTeam = "1629653444" // 6 month after tge
 const vestingDevAmount = web3.utils.toWei("56000", "ether");
@@ -35,7 +35,7 @@ module.exports = function (deployer) {
     await farming.add("10",ETH_BUSD,false);
     await farming.add("10",BNB_BUSD,false);
     await farming.add("10",OIL_BNB,false);
-    
+
 
 
     /*
