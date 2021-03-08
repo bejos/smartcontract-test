@@ -1,5 +1,6 @@
 const Web3 = require("web3");
 const web3 = new Web3();
+const rSTAKD = artifacts.require("rSTAKDToken");
 const STAKDToken = artifacts.require("STAKDToken");
 const MasterStakd = artifacts.require("MasterStakd");
 const LockLiquidity = artifacts.require("LockLiquidity");
@@ -25,8 +26,20 @@ const saleDistro = web3.utils.toWei("374000", "ether"); //seed,private,public sa
 const timeLockDelay = "1209600"; //14 days
 module.exports = function (deployer) {
   deployer.then(async () => {
+
+    await deployer.deploy(rSTAKD);
+    
     //const stakdToken = await new STAKDToken("0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67")
-    await deployer.deploy(MasterStakd,"0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67",admin,startBlock);
+
+
+
+
+    /*
+
+ 
+  await deployer.deploy(STAKDSale);
+
+      await deployer.deploy(MasterStakd,"0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67",admin,startBlock);
     const farming = await MasterStakd.deployed();
     await farming.add("300",STAKD_BNB,false);
     await farming.add("200",STAKD_BUSD,false);
@@ -35,13 +48,6 @@ module.exports = function (deployer) {
     await farming.add("10",ETH_BUSD,false);
     await farming.add("10",BNB_BUSD,false);
     await farming.add("10",OIL_BNB,false);
-
-
-
-    /*
-
- 
-  await deployer.deploy(STAKDSale);
 
     await deployer.deploy(VestingDev,"0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67",vestingStartDev);
     await deployer.deploy(VestingTeam,"0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67",vestingStartTeam);

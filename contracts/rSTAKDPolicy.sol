@@ -124,8 +124,8 @@ contract rSTAKDPolicy is Ownable {
     uint256 public lastRebaseTimestamp;
     uint256 public epoch;
     uint256 private constant DECIMALS = 18;
-    uint256 private constant MAX_SUPPLY = 1000000 ether; //1 mil max supply
-    uint256 private constant MIN_SUPPLY = 10000 ether; //10k minimum
+    uint256 private constant MAX_SUPPLY = 10000000 ether; //10 mil max supply
+    uint256 private constant MIN_SUPPLY = 100000 ether; //100k minimum
     int256 public ratio;
     address public operator;
 

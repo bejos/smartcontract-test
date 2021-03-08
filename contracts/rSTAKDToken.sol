@@ -240,15 +240,15 @@ contract rSTAKDToken is BEP20Detailed, Ownable {
 
     uint256 private constant DECIMALS = 18;
     uint256 private constant MAX_UINT256 = ~uint256(0);
-    uint256 private constant INITIAL_FRAGMENTS_SUPPLY = 100000 ether; //100k initial supply
+    uint256 private constant INITIAL_FRAGMENTS_SUPPLY = 1000000 ether; //1mil initial supply
 
-    uint256 private constant MIN_SUPPLY = 10000 ether; //10k minimum
+    uint256 private constant MIN_SUPPLY = 100000 ether; //100k minimum
 
     // Use the highest value that fits in a uint256 for max granularity.
     uint256 private constant TOTAL_GONS =
         MAX_UINT256 - (MAX_UINT256 % INITIAL_FRAGMENTS_SUPPLY);
 
-    uint256 private constant MAX_SUPPLY = 1000000 ether; //1 mil max supply
+    uint256 private constant MAX_SUPPLY = 10000000 ether; //10 mil max supply
 
     uint256 private _totalSupply;
     uint256 private _gonsPerFragment;
