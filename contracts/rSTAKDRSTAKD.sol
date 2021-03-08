@@ -662,7 +662,7 @@ contract rSTAKDRSTAKD is rSTAKDSTAKDWrapper {
     function stake(uint256 amount) public updateReward(msg.sender) override checkStart{ 
         require(amount > 0, "Cannot stake 0");
         uint256 fee = amount.mul(DEPOSIT_FEE).div(100); //4% deposit fee
-        stakd.safeTransferFrom(msg.sender, rewardDistribution, fee);
+        rSTAKD.safeTransferFrom(msg.sender, rewardDistribution, fee);
         super.stake(amount.sub(fee));
         emit Staked(msg.sender, amount);
     }
