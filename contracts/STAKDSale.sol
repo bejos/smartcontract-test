@@ -14,11 +14,11 @@ contract STAKDSale {
         0x24A6578b8ccB13043f4Ef4E131e8A591E89B1b97;
     uint256 public minAmount = 0.5 ether;
     uint256 public maxAmount = 10 ether;
-    uint256 public capAmount = 1000 ether;
-    uint256 private constant SALE_DURATION = 3 hours;
+    uint256 public capAmount = 400 ether;
+    uint256 private constant SALE_DURATION = 24 hours;
     uint256 public bnbRaised;
     uint256 public immutable saleEnd;
-    uint256 public saleStart = 1614096000; // 4 PM UTC, 23 february
+    uint256 public saleStart = 1615222800; // Monday, March 8, 2021 6:00:00 PM GMT+01:00
     bool public saleActive = false;
     mapping(address => uint256) public userbuys;
 
@@ -42,7 +42,10 @@ contract STAKDSale {
 
     function isSaleActive() public view returns (bool) {
         if (block.timestamp >= saleStart && block.timestamp <= saleEnd) {
-            return true;
+            //in period
+            if(bnbRaised >= capAmount){
+                return false;
+            } else return true;
         } else return false;
     }
 

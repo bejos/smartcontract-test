@@ -663,7 +663,7 @@ contract rSTAKDBUSDWrapper {
     using SafeMath for uint256;
     using SafeBEP20 for IBEP20;
     IBEP20 public constant busd =
-        IBEP20(0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67); //busd
+        IBEP20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //busd
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -692,9 +692,9 @@ contract rSTAKDBUSDWrapper {
 contract rSTAKDBUSD is rSTAKDBUSDWrapper {
     uint256 public constant DURATION = 30 days;
     IBEP20 public constant rSTAKD =
-        IBEP20(0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c); //rstakd
+        IBEP20(0x24E1143E29Caf4CF98AB027470D0b5093712E5D1); //rstakd
     uint256 public constant initreward = 150000 ether; //150k tokens
-    uint256 public starttime = 1614258000; // 1 pm UTC, 25th february
+    uint256 public starttime = 1615374073; // Wednesday, March 10, 2021 11:01:13 AM
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
@@ -800,13 +800,14 @@ contract rSTAKDBUSD is rSTAKDBUSDWrapper {
     {
         if (block.timestamp >= periodFinish) {
             rewardRate = initreward.div(DURATION);
+            starttime = block.timestamp;
         } else {
             uint256 remaining = periodFinish.sub(block.timestamp);
             uint256 leftover = remaining.mul(rewardRate);
             rewardRate = initreward.add(leftover).div(DURATION);
         }
         lastUpdateTime = block.timestamp;
-        periodFinish = starttime.add(DURATION);
+        periodFinish = block.timestamp.add(DURATION);
         emit RewardAdded(initreward);
     }
 }

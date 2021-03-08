@@ -8,6 +8,12 @@ const Timelock = artifacts.require("Timelock");
 const STAKDSale = artifacts.require("STAKDSale");
 const VestingDev = artifacts.require("VestingDev");
 const VestingTeam = artifacts.require("VestingTeam");
+
+const rSTAKDwbnb = artifacts.require("rSTAKDwbnb")
+const rSTAKDBUSD = artifacts.require("rSTAKDBUSD")
+const rSTAKDLP = artifacts.require("rSTAKDLP")
+const rSTAKDRSTAKD = artifacts.require("rSTAKDRSTAKD")
+
 const admin = "0x24A6578b8ccB13043f4Ef4E131e8A591E89B1b97";
 const startBlock = "5133699"; //to be changed
 const vestingStartDev = "1614096000"; // 4pm utc 23 feb
@@ -27,7 +33,14 @@ const timeLockDelay = "1209600"; //14 days
 module.exports = function (deployer) {
   deployer.then(async () => {
 
-    await deployer.deploy(rSTAKD);
+await deployer.deploy(rSTAKDwbnb)
+await deployer.deploy(rSTAKDBUSD)
+await deployer.deploy(rSTAKDLP)
+await deployer.deploy(rSTAKDRSTAKD)
+await deployer.deploy(STAKDSale)
+
+
+ //   await deployer.deploy(rSTAKD);
     
     //const stakdToken = await new STAKDToken("0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67")
 

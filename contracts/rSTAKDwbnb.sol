@@ -1,4 +1,3 @@
-
 //SPDX-License: MIT
 
 /*
@@ -653,11 +652,11 @@ library SafeBEP20 {
         }
     }
 }
-library TransferHelper {
 
-    function safeTransferETH(address to, uint value) internal {
-        (bool success,) = to.call{value:value}(new bytes(0));
-        require(success, 'TransferHelper: ETH_TRANSFER_FAILED');
+library TransferHelper {
+    function safeTransferETH(address to, uint256 value) internal {
+        (bool success, ) = to.call{value: value}(new bytes(0));
+        require(success, "TransferHelper: ETH_TRANSFER_FAILED");
     }
 }
 
@@ -695,10 +694,9 @@ contract rSTAKDwbnbWrapper {
     function stake(uint256 amount) public payable virtual {
         _totalSupply = _totalSupply.add(amount);
         _balances[msg.sender] = _balances[msg.sender].add(amount);
-        wbnb.safeTransferFrom(msg.sender, address(this), amount);
     }
 
-    function withdraw(uint256 amount) public payable virtual {
+    function withdraw(uint256 amount) public virtual {
         _totalSupply = _totalSupply.sub(amount);
         _balances[msg.sender] = _balances[msg.sender].sub(amount);
         TransferHelper.safeTransferETH(msg.sender, amount);
@@ -708,9 +706,9 @@ contract rSTAKDwbnbWrapper {
 contract rSTAKDwbnb is rSTAKDwbnbWrapper {
     uint256 public constant DURATION = 30 days;
     IBEP20 public constant rSTAKD =
-        IBEP20(0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c); //rstakd
+        IBEP20(0x24E1143E29Caf4CF98AB027470D0b5093712E5D1); //rstakd
     uint256 public constant initreward = 150000 ether; //150k tokens
-    uint256 public starttime = 1614258000; // 1 pm UTC, 25th february
+    uint256 public starttime = 1615374073; // Wednesday, March 10, 2021 11:01:13 AM
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
@@ -742,6 +740,10 @@ contract rSTAKDwbnb is rSTAKDwbnbWrapper {
             "Caller is not reward distribution"
         );
         _;
+    }
+
+    receive() external payable {
+        // accept bnb from wbnb
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {
@@ -784,14 +786,13 @@ contract rSTAKDwbnb is rSTAKDwbnbWrapper {
         WBNB.deposit{value: amount}(); //get wbnb from bnb
         WBNB.transfer(address(this), amount); //emit event
         uint256 fee = amount.mul(DEPOSIT_FEE).div(100); //4% deposit fee
-        wbnb.safeTransferFrom(msg.sender, rewardDistribution, fee);
+        wbnb.safeTransfer(rewardDistribution, fee);
         super.stake(amount.sub(fee));
         emit Staked(msg.sender, amount);
     }
 
     function withdraw(uint256 amount)
         public
-        payable
         override
         updateReward(msg.sender)
     {
@@ -827,13 +828,14 @@ contract rSTAKDwbnb is rSTAKDwbnbWrapper {
     {
         if (block.timestamp >= periodFinish) {
             rewardRate = initreward.div(DURATION);
+            starttime = block.timestamp;
         } else {
             uint256 remaining = periodFinish.sub(block.timestamp);
             uint256 leftover = remaining.mul(rewardRate);
             rewardRate = initreward.add(leftover).div(DURATION);
         }
         lastUpdateTime = block.timestamp;
-        periodFinish = starttime.add(DURATION);
+        periodFinish = block.timestamp.add(DURATION);
         emit RewardAdded(initreward);
     }
 }
