@@ -33,24 +33,25 @@ const timeLockDelay = "1209600"; //14 days
 module.exports = function (deployer) {
   deployer.then(async () => {
 
-await deployer.deploy(rSTAKDwbnb)
-await deployer.deploy(rSTAKDBUSD)
-await deployer.deploy(rSTAKDLP)
+
 await deployer.deploy(rSTAKDRSTAKD)
-await deployer.deploy(STAKDSale)
+
 
 
  //   await deployer.deploy(rSTAKD);
     
     //const stakdToken = await new STAKDToken("0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67")
-
+   
 
 
 
     /*
 
- 
+  await deployer.deploy(STAKDSale)
   await deployer.deploy(STAKDSale);
+  await deployer.deploy(rSTAKDwbnb)
+await deployer.deploy(rSTAKDBUSD)
+await deployer.deploy(rSTAKDLP)
 
       await deployer.deploy(MasterStakd,"0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67",admin,startBlock);
     const farming = await MasterStakd.deployed();

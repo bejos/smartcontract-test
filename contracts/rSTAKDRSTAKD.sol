@@ -569,7 +569,7 @@ pragma solidity ^0.6.0;
 contract rSTAKDSTAKDWrapper {
     using SafeMath for uint256;
     using SafeBEP20 for IBEP20;
-    IBEP20 public constant rstakd = IBEP20(0x24E1143E29Caf4CF98AB027470D0b5093712E5D1); //rstakd
+    IBEP20 public constant stakd = IBEP20(0xFfB3eDd21be33d5e78C9e0C2A275b3Fd42670D67); //stakd
 
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
@@ -585,13 +585,13 @@ contract rSTAKDSTAKDWrapper {
     function stake(uint256 amount) public virtual {
         _totalSupply = _totalSupply.add(amount);
         _balances[msg.sender] = _balances[msg.sender].add(amount);
-        rstakd.safeTransferFrom(msg.sender, address(this), amount);
+        stakd.safeTransferFrom(msg.sender, address(this), amount);
     }
 
     function withdraw(uint256 amount) public virtual {
         _totalSupply = _totalSupply.sub(amount);
         _balances[msg.sender] = _balances[msg.sender].sub(amount);
-        rstakd.safeTransfer(msg.sender, amount);
+        stakd.safeTransfer(msg.sender, amount);
     }
 
 }
@@ -662,7 +662,7 @@ contract rSTAKDRSTAKD is rSTAKDSTAKDWrapper {
     function stake(uint256 amount) public updateReward(msg.sender) override checkStart{ 
         require(amount > 0, "Cannot stake 0");
         uint256 fee = amount.mul(DEPOSIT_FEE).div(100); //4% deposit fee
-        rSTAKD.safeTransferFrom(msg.sender, rewardDistribution, fee);
+        stakd.safeTransferFrom(msg.sender, rewardDistribution, fee);
         super.stake(amount.sub(fee));
         emit Staked(msg.sender, amount);
     }
